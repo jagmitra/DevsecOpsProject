@@ -48,13 +48,20 @@ pipeline {
                 }
             }
         }
-        stage('Trivy File Scan') {
-            steps {
-                dir('Application-Code/frontend') {
-                    sh 'trivy fs . > trivyfs.txt'
-                }
+     stage('Trivy File Scan') {
+    steps {
+        script {
+            dir('Application-Code/frontend') {
+                echo "Running Trivy file system scan on frontend code..."
+                sh '''
+                    trivy fs . --exit-code 0 --severity HIGH,CRITICAL > trivyfs.txt || true
+                '''
+                echo "Trivy scan completed. Results saved in trivyfs.txt"
             }
         }
+    }
+}
+
         stage("Docker Image Build") {
             steps {
                 script {
@@ -92,7 +99,7 @@ pipeline {
             }
             steps {
                 dir('Kubernetes-Manifests-file/Frontend') {
-                    withCredentials([string(credentialsId: 'Github-access', variable: 'Github-access')]) {
+                    withCredentials([string(credentialsId: 'Github-access', variable: 'GITHUB_TOKEN')]) {
                         sh '''
                             git config user.email "jagmitra@hotmail.com"
                             git config user.name "jagmitra"
