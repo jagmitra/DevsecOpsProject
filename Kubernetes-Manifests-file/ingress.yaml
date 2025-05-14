@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: amanpathakdevops.study
+    - host: http://backend-service-name.namespace.svc.cluster.local
       http:
         paths:
           - path: /api
